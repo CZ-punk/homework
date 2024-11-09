@@ -51,12 +51,13 @@ public class UserService {
   }
 
   @Transactional(readOnly = true)
-  public ResponseDto<?> accessAdmin(User user) {
+  public ResponseDto<?> accessUser(User user) {
     return new ResponseDto<>(UserInfoDto.of(user), null);
   }
 
   @Transactional(readOnly = true)
-  public ResponseDto<?> accessUser(User user) {
+  public ResponseDto<?> accessAdmin(User user) {
     return new ResponseDto<>(UserInfoDto.of(user), null);
   }
+
 }

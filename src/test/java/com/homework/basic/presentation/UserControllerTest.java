@@ -119,21 +119,4 @@ public class UserControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-//    @Test
-//    @WithCustomMockUser
-//    public void IfUserExistsThenGetUserInfoReturnsSuccess() throws Exception {
-//        mockMvc.perform(get("/v1/user")
-//                        .header("X-AUTH-TOKEN", "aaaaaaa"))
-//                .andExpect(status().isOk());
-//    }
-
-//    @Test
-//    @WithCustomMockUser(username = "choi")
-//    public void 권한별_테스트() {
-//        mockMvc.perform(get("/admin")
-//                .with(user("choi")
-//                        .password("pass")
-//                        .roles("USER", "ADMIN")));
-//
-//    }
 }
