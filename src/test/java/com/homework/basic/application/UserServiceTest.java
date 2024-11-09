@@ -1,14 +1,19 @@
 package com.homework.basic.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.homework.basic.application.service.UserService;
 import com.homework.basic.domain.entity.User;
 import com.homework.basic.domain.entity.UserRole;
 import com.homework.basic.domain.repository.UserRepository;
 import com.homework.basic.presentation.error.UserException;
-import com.homework.basic.presentation.request.LoginDto;
-import com.homework.basic.presentation.request.SignupDto;
-import com.homework.basic.presentation.response.ResponseDto;
-import com.homework.basic.presentation.response.UserInfoDto;
+import com.homework.basic.presentation.request.LoginRequest;
+import com.homework.basic.presentation.request.SignupRequest;
+import com.homework.basic.presentation.response.CheckRoleResponse;
+import com.homework.basic.presentation.response.LoginResponse;
+import com.homework.basic.presentation.response.SignupResponse;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -18,86 +23,84 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserServiceTest {
 
+  @Autowired private UserService userService;
+  private static UserRepository staticUserRepository;
 
-    @Autowired
-    private UserService userService;
-    private static UserRepository staticUserRepository;
+  @BeforeAll
+  public static void setUp(@Autowired UserRepository userRepository) {
+    staticUserRepository = userRepository;
+  }
 
-    @BeforeAll
-    public static void setUp(@Autowired UserRepository userRepository) {
-        staticUserRepository = userRepository;
+  @AfterAll
+  public static void tearDown() {
+    if (staticUserRepository != null) {
+      staticUserRepository.deleteAll(); // 모든 데이터 삭제
     }
+  }
 
-    @AfterAll
-    public static void tearDown() {
-        if (staticUserRepository != null) {
-            staticUserRepository.deleteAll(); // 모든 데이터 삭제
-        }
-    }
+  @Test
+  @DisplayName("회원가입")
+  public void signup() {
+    // given
+    SignupRequest requestDto = new SignupRequest("user", "password", "nickname");
 
-    @Test
-    @DisplayName("회원가입")
-    public void signup() {
-        //given
-        SignupDto requestDto = new SignupDto("user", "password", "01012345678");
+    // when
+    SignupResponse responseDto = userService.signup(requestDto);
 
-        //when
-        ResponseDto<?> responseDto = userService.signup(requestDto);
+    // then
+    assertThat(responseDto.username()).isEqualTo("user");
+    assertThat(responseDto.nickname()).isEqualTo("nickname");
+    assertThat(responseDto.roles().contains(UserRole.USER)).isTrue();
+  }
 
-        //then
-        assertThat(responseDto.getError()).isEqualTo(null);
-        assertThat(responseDto.getData()).isEqualTo("success signup.");
-    }
+  @Test
+  @DisplayName("로그인")
+  public void sign() {
+    // given
+    LoginRequest requestDto = new LoginRequest("user", "password");
 
-    @Test
-    @DisplayName("로그인")
-    public void sign() {
-        //given
-        LoginDto requestDto = new LoginDto("user", "password");
+    // when
+    LoginResponse responseDto = userService.sign(requestDto);
 
-        //when
-        ResponseDto<?> responseDto = userService.sign(requestDto);
+    // then
+    assertThat(responseDto.token()).isNotNull();
+    assertThat(responseDto.token()).isInstanceOf(String.class);
+  }
 
-        //then
-        assertThat(responseDto.getError()).isEqualTo(null);
-        assertThat(responseDto.getData()).isInstanceOf(String.class);
-    }
+  @Test
+  @DisplayName("룰 체크 - ROLE_USER")
+  public void RoleCheck_USER() {
+    // given
+    User user =
+        staticUserRepository
+            .findByUsernameWithRoles("user")
+            .orElseThrow(() -> new UserException(HttpStatus.UNAUTHORIZED, "unauthorized."));
 
-    @Test
-    @DisplayName("룰 체크 - ROLE_USER")
-    public void RoleCheck_USER() {
-        //given
-        User user = staticUserRepository.findByUsername("user").orElseThrow(() -> new UserException(HttpStatus.UNAUTHORIZED, "unauthorized."));
+    // when
+    CheckRoleResponse responseDto = userService.accessUser(user);
 
-        //when
-        ResponseDto<?> responseDto = userService.accessUser(user);
+    // then
+    assertThat(responseDto.nickname()).isEqualTo("nickname");
+    assertThat(responseDto.roles().contains(UserRole.USER)).isTrue();
+  }
 
-        //then
-        assertThat(responseDto.getError()).isEqualTo(null);
-        assertThat(responseDto.getData()).isInstanceOf(UserInfoDto.class);
+  @Test
+  @DisplayName("룰 체크 - ROLE_ADMIN")
+  public void RoleCheck_ADMIN() {
+    // given
+    Set<UserRole> roles = new HashSet<>();
+    roles.add(UserRole.ADMIN);
+    User user = new User(99L, "admin", "password", "nickname", roles);
 
-    }
+    // when
+    CheckRoleResponse responseDto = userService.accessAdmin(user);
 
-    @Test
-    @DisplayName("룰 체크 - ROLE_ADMIN")
-    public void RoleCheck_ADMIN() {
-        //given
-        User user = new User(99L, "admin", "password", "01012345678", UserRole.ADMIN);
-
-        //when
-        ResponseDto<?> responseDto = userService.accessAdmin(user);
-
-        //then
-        assertThat(responseDto.getError()).isEqualTo(null);
-        assertThat(responseDto.getData()).isInstanceOf(UserInfoDto.class);
-
-    }
-
-
+    // then
+    assertThat(responseDto.nickname()).isEqualTo("nickname");
+    assertThat(responseDto.roles().contains(UserRole.ADMIN)).isTrue();
+  }
 }

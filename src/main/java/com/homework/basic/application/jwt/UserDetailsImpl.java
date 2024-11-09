@@ -1,9 +1,8 @@
 package com.homework.basic.application.jwt;
 
 import com.homework.basic.domain.entity.User;
-import com.homework.basic.domain.entity.UserRole;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,13 +27,8 @@ public class UserDetailsImpl implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    UserRole role = user.getUserRole();
-    String authority = role.getAuthority();
-
-    SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
-    Collection<GrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(simpleGrantedAuthority);
-
-    return authorities;
+    return user.getRoles().stream()
+        .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
+        .collect(Collectors.toList());
   }
 }

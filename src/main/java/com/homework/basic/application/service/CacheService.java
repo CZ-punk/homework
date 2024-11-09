@@ -27,7 +27,7 @@ public class CacheService {
 
   private User loadUserFromDatabase(String username) {
     return userRepository
-        .findByUsername(username)
+        .findByUsernameWithRoles(username)
         .orElseThrow(
             () ->
                 new UserException(

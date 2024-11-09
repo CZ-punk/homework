@@ -1,6 +1,8 @@
 package com.homework.basic.domain.entity;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,18 +21,22 @@ public class User {
 
   private String username;
   private String password;
-  private String phoneNumber;
+  private String nickname;
 
-  @Enumerated(value = EnumType.STRING)
-  private UserRole userRole;
+  @ElementCollection(targetClass = UserRole.class)
+  @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "username"))
+  @Enumerated(EnumType.STRING)
+  @Builder.Default
+  private Set<UserRole> roles = new HashSet<>();
 
-  public static User toUser(String username, String encodedPassword, String phoneNumber) {
+  public static User toUser(String username, String encodedPassword, String nickname) {
+    Set<UserRole> set = new HashSet<>();
+    set.add(UserRole.USER);
     return User.builder()
         .username(username)
         .password(encodedPassword)
-        .phoneNumber(phoneNumber)
-        .userRole(UserRole.USER)
+        .nickname(nickname)
+        .roles(set)
         .build();
   }
-
 }

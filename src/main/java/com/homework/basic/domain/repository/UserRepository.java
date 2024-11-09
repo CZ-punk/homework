@@ -13,5 +13,7 @@ public interface UserRepository {
 
   Optional<User> findByUsername(String username);
 
+  Optional<User> findByUsernameWithRoles(String username);
+
   void deleteAll();
 }

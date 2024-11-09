@@ -55,11 +55,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       filterChain.doFilter(request, response);
     } catch (Exception ex) {
       log.error(ex.getMessage());
-      throw new UserException(HttpStatus.INTERNAL_SERVER_ERROR, "security context error?");
+      throw new UserException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
   }
 
   private void setAuthentication(String username) {
+
     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
     Authentication authentication = createAuthentication(username);
 
@@ -68,7 +69,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
   }
 
   private Authentication createAuthentication(String username) {
+    log.info("create Authentication start");
     UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+    log.info("create Authentication end");
     return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
   }
 

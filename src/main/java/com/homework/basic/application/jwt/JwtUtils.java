@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.util.Date;
+import java.util.Set;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,10 +35,12 @@ public class JwtUtils {
     this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(key));
   }
 
-  public String createToken(String username, UserRole userRole) {
+  public String createToken(String username, Set<UserRole> roles) {
+    String[] roleArray = roles.stream().map(UserRole::getAuthority).toArray(String[]::new);
+
     return Jwts.builder()
         .claim("username", username)
-        .claim("role", userRole.getAuthority())
+        .claim("role", roleArray)
         .issuer(issuer)
         .issuedAt(new Date(System.currentTimeMillis()))
         .expiration(new Date(System.currentTimeMillis() + expirationTime))
