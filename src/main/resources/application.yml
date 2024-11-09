@@ -1,11 +1,9 @@
 spring:
   application:
-    name: basic
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-    url: jdbc:postgresql://localhost:${POSTGRES_DB}:5432
+    name: homework
+  profiles:
+    active: local
 
 server:
-    port: 8080
+  port: 8080
+

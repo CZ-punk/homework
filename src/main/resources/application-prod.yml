@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+#    url: jdbc:postgresql://:${POSTGRES_DB}:5432
+  jpa:
+    hibernate:
+      ddl-auto: create
