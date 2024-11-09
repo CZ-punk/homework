@@ -17,32 +17,29 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupDto signupDto) {
-        return ResponseEntity.ok(userService.signup(signupDto));
-    }
+  @PostMapping("/signup")
+  public ResponseEntity<?> signup(@RequestBody SignupDto signupDto) {
+    return ResponseEntity.ok(userService.signup(signupDto));
+  }
 
-    @PostMapping("/sign")
-    public ResponseEntity<?> sign(@RequestBody LoginDto loginDto) {
-        return ResponseEntity.ok(userService.sign(loginDto));
-    }
+  @PostMapping("/sign")
+  public ResponseEntity<?> sign(@RequestBody LoginDto loginDto) {
+    return ResponseEntity.ok(userService.sign(loginDto));
+  }
 
+  @PreAuthorize("hasRole('USER')")
+  @GetMapping("/user")
+  public ResponseEntity<?> accessUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    log.info("/user/user 호출.");
+    return ResponseEntity.ok(userService.accessUser(userDetails.getUser()));
+  }
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/user")
-    public ResponseEntity<?> accessUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        log.info("/user/user 호출.");
-        return ResponseEntity.ok(userService.accessUser(userDetails.getUser()));
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin")
-    public ResponseEntity<?> accessAdmin(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        log.info("/user/admin 호출.");
-        return ResponseEntity.ok(userService.accessAdmin(userDetails.getUser()));
-    }
-
-
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/admin")
+  public ResponseEntity<?> accessAdmin(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    log.info("/user/admin 호출.");
+    return ResponseEntity.ok(userService.accessAdmin(userDetails.getUser()));
+  }
 }

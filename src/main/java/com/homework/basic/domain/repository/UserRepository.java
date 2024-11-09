@@ -1,15 +1,17 @@
 package com.homework.basic.domain.repository;
 
 import com.homework.basic.domain.entity.User;
-import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository {
 
-    User save(User user);
-    Optional<User> findById(Long id);
-    Optional<User> findByUsername(String username);
+  User save(User user);
 
+  Optional<User> findById(Long id);
+
+  Optional<User> findByUsername(String username);
+
+  void deleteAll();
 }

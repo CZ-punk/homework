@@ -1,6 +1,5 @@
 package com.homework.basic.infrastructure.configuration;
 
-
 import com.homework.basic.application.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,17 +13,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class WebConfig {
 
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-
-    @Bean
-    public JwtUtils jwtUtils() {
-        return new JwtUtils();
-    }
-
-
+  @Bean
+  public JwtUtils jwtUtils() {
+    return new JwtUtils();
+  }
 }

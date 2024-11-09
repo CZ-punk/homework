@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final CacheService cacheService;
+  private final CacheService cacheService;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = cacheService.getUser(username);
-        return new UserDetailsImpl(user);
-    }
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    User user = cacheService.getUser(username);
+    return new UserDetailsImpl(user);
+  }
 }
