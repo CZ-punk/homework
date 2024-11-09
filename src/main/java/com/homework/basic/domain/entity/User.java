@@ -1,13 +1,17 @@
 package com.homework.basic.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.homework.basic.presentation.request.SignupDto;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "p_users")
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +19,23 @@ public class User {
 
     private String username;
     private String password;
-
+    private String phoneNumber;
+    @Enumerated(value = EnumType.STRING)
     private UserRole userRole;
+
+
+    public static User toUser(String username, String encodedPassword, String phoneNumber) {
+        return User.builder()
+                .username(username)
+                .password(encodedPassword)
+                .phoneNumber(phoneNumber)
+                .userRole(UserRole.USER)
+                .build();
+    }
+
+
+
+
+
 
 }
