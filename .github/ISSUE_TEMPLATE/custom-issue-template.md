@@ -1,6 +1,6 @@
 ---
 name: Custom Issue Template
-about: 해당 이슈 템플릿을 사용하여 이슈를 생성
+about: 해당 이슈 템플릿을 사용하여 이슈를 생성해주세요.
 title: ''
 labels: ''
 assignees: ''
