@@ -9,8 +9,11 @@ spring:
     password: 1234
 
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: update
+
+
 
 jwt-secret-key: 44WI66mU44WR44S3652844WT44WR44WB44WI642U656Y66qG6rGw7ZW066m36rGw7ZaE7KCA64yk7J6Q44WQMzIs44WI44S344Sx44WOMjM044S37IqI44Wc44Sx44WO44WN44WC44S344WH
 jwt-expiration-time: 36000000
@@ -19,6 +22,3 @@ logging:
   level:
     root: INFO
     com.homework: DEBUG
-
-#  file:
-#    name: logs/application.log  # 로그 파일 경로
