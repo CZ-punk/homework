@@ -1,0 +1,21 @@
+name: Build and Clean
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '21'
+
+      - name: Build with Gradle
+        run: ./gradlew clean build spotlessApply
