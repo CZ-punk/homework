@@ -69,3 +69,4 @@ jobs:
               --link postgres-db:db \
               ${{ secrets.DOCKER_HUB_USERNAME }}/homework:latest
           EOF
+          
