@@ -30,6 +30,9 @@ jobs:
         run: ./gradlew clean build -x test
 
       - name: Build with Dockerfile
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
         run: |
           docker build -t homework:latest .
 
@@ -79,5 +82,7 @@ jobs:
             docker run -d \
             --name homework-container \
             --network my_network \
+            -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
+            -e JWT_EXPIRATION_TIME=${{ secrets.JWT_EXPIRATION_TIME }} \
             -p 8080:8080 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/homework:latest
