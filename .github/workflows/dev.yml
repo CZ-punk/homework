@@ -1,0 +1,77 @@
+name: Build and Clean
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '21'
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Give execute permission to gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Build with Dockerfile
+        run: |
+          docker build -t homework:latest .
+
+      - name: Save Docker image as tar
+        run: |
+          docker save homework:latest -o homework_latest.tar
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v3
+        with:
+          name: homework-image
+          path: homework_latest.tar
+
+  staging:
+    name: deploy to stating
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Copy Docker image to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} homework_latest.tar ec2-user@${{ secrets.EC2_PUBLIC_IP }}:~/
+
+      - name: SSH into EC2 and load Docker image and run DB
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            docker load -i homework_latest.tar        
+            docker network create my_network
+            docker run -d \
+              --name postgres-db \
+              --network my_network \
+              -e POSTGRES_USER=postgres \
+              -e POSTGRES_PASSWORD=1234 \
+              -e POSTGRES_DB=homework \
+              -p 5432:5432 \
+              postgres:latest
+            docker run -d \
+              --name homework-container \
+              --network my_network \
+              -p 8080:8080 \
+              --link postgres-db:db \
+              homework:latest
+          EOF
