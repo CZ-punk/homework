@@ -52,22 +52,29 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+            
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/homework:latest
             
-            docker network create my_network
+            docker network create my_network || true
+            
+            docker stop postgres-db || true
+            docker rm postgres-db || true
+      
+            docker stop homework-container || true
+            docker rm homework-container || true
+      
+            docker run -d \
+            --name postgres-db \
+            --network my_network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=1234 \
+            -e POSTGRES_DB=homework \
+            -p 5432:5432 \
+            postgres:latest
             
             docker run -d \
-              --name postgres-db \
-              --network my_network \
-              -e POSTGRES_USER=postgres \
-              -e POSTGRES_PASSWORD=1234 \
-              -e POSTGRES_DB=homework \
-              -p 5432:5432 \
-              postgres:latest
-            
-            docker run -d \
-              --name homework-container \
-              --network my_network \
-              -p 8080:8080 \
-              --link postgres-db:db \
-              ${{ secrets.DOCKER_HUB_USERNAME }}/homework:latest
+            --name homework-container \
+            --network my_network \
+            -p 8080:8080 \
+            ${{ secrets.DOCKER_HUB_USERNAME }}/homework:latest
