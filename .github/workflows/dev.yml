@@ -24,6 +24,9 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle no test
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
         run: ./gradlew clean build -x test
 
       - name: Build with Dockerfile

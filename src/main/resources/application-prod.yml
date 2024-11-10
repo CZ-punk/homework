@@ -4,9 +4,19 @@ spring:
       on-profile: prod
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-#    url: jdbc:postgresql://:${POSTGRES_DB}:5432
+    username: postgres
+    password: 1234
+    url: jdbc:postgresql://postgres-db:5432/homework
+
   jpa:
+    show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+
+jwt-secret-key: ${JWT_SECRET_KEY}
+jwt-expiration-time: ${JWT_EXPIRATION_TIME}
+
+logging:
+  level:
+    root: INFO
+    com.homework: DEBUG
