@@ -45,10 +45,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: Copy Docker image to EC2
-        run: |
-          scp -i ${{ secrets.EC2_SSH_KEY }} homework_latest.tar ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/
-
       - name: SSH into EC2 and pull Docker image and run DB
         run: |
           ssh -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'          
