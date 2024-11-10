@@ -14,10 +14,10 @@ public class SwaggerConfig {
   public OpenAPI openAPI() {
 
     Server server = new Server(); // API 서버 설정
-    server.setUrl("http://localhost:8080/swagger");
+    server.setUrl("http://localhost:8080");
 
     Server prodServer = new Server(); // 운영서버에 따로 띄우기 위해 서버를 추가할 수 있다.
-    server.setUrl("http://ec2-3-38-93-48.ap-northeast-2.compute.amazonaws.com:8080/swagger");
+    prodServer.setUrl("http://ec2-3-38-93-48.ap-northeast-2.compute.amazonaws.com:8080");
 
     Info info = new Info().title("USER API").version("v1.0.0").description("USER API");
 

@@ -1,6 +1,7 @@
 package com.homework.basic.infrastructure.configuration;
 
 import com.homework.basic.application.jwt.JwtAuthenticationEntryPoint;
+import com.homework.basic.application.jwt.JwtUtils;
 import com.homework.basic.presentation.filter.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -19,26 +22,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final JwtAuthorizationFilter authorizationFilter;
-  private final JwtAuthenticationEntryPoint entryPoint;
+    private final JwtAuthorizationFilter authorizationFilter;
+    private final JwtAuthenticationEntryPoint entryPoint;
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            request ->
-                request
-                    .requestMatchers("/api/user/signup")
-                    .permitAll()
-                    .requestMatchers("/api/user/sign")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated());
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(
+                        request ->
+                                request
+                                        .requestMatchers("/api/user/signup")
+                                        .permitAll()
+                                        .requestMatchers("/api/user/sign")
+                                        .permitAll()
+                                        .requestMatchers("/swagger-ui/**").permitAll()
+                                        .requestMatchers("/v3/api-docs/**").permitAll()
+                                        .anyRequest()
+                                        .authenticated());
 
-    http.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
-    http.addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
+        http.addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
-    return http.build();
-  }
+        return http.build();
+    }
 }

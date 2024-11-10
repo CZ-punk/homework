@@ -77,6 +77,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
   private boolean FreePath(HttpServletRequest request) {
     String requestURI = request.getRequestURI();
-    return requestURI.startsWith("/api/user/signup") || requestURI.startsWith("/api/user/sign");
+    return requestURI.startsWith("/api/user/signup") || requestURI.startsWith("/api/user/sign") || requestURI.startsWith("/swagger-ui") || requestURI.startsWith("/v3/api-docs");
   }
 }
